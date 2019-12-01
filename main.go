@@ -19,6 +19,8 @@ var myId int
 
 var nPorts int
 var isCandidate bool
+var isRunningMyElection bool
+var cordinatorId int
 var numberSentMessages int
 var SendersConn []*net.UDPConn
 var ReceiversConn *net.UDPConn
@@ -63,6 +65,17 @@ func doReceiverJob() {
 	CheckError(err)
 
 	fmt.Println("Received msg.type = ", msg.Type, " from id = ", msg.Id)
+
+	if msg.Type == "ELECTION" {
+		if msg.Id < myId {
+			doSenderJob(msg.Id, "OK")
+			startElection()
+		}
+	} else if msg.Type == "OK" {
+		isRunningMyElection = false
+	} else if msg.Type == "CORDINATOR" {
+		cordinatorId = msg.Id
+	}
 }
 
 func doSenderJob(otherProcessID int, msgType string) {
@@ -86,6 +99,7 @@ func doSenderJob(otherProcessID int, msgType string) {
 
 func initConnections() {
 	numberSentMessages = 0
+	cordinatorId = -1
 
 	// getting my Id
 	myId, err := strconv.Atoi(os.Args[1])
@@ -128,6 +142,17 @@ func initConnections() {
 	}
 }
 
+func startElection() {
+	if isRunningMyElection {
+		fmt.Print("erro! isRunningMyElection is true\n")
+	}
+
+	isRunningMyElection = true
+	for otherProcessId := myId + 1; otherProcessId < nPorts + 1; otherProcessId++ {
+		doSenderJob(otherProcessId, "ELECTION")
+	}
+}
+
 func main() {
 	readFileParameters("params.txt")
 	fmt.Printf("nPorts: %d\n", nPorts)
@@ -140,13 +165,14 @@ func main() {
 	}
 
 	if isCandidate {
-		for otherProcessId := myId + 1; otherProcessId < nPorts + 1; otherProcessId++ {
-			doSenderJob(otherProcessId, "ELECTION")
-		}
+		startElection()
 	}
 
-	for {
+	for cordinatorId == -1{
 		go doReceiverJob()
 		time.Sleep(time.Second * 1)
 	}
+
+	fmt.Printf("CORDINATOR ID = %d\n", cordinatorId)
+	fmt.Printf("END\n")
 }
