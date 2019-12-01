@@ -18,7 +18,7 @@ var err error
 var myPort string
 
 var nPorts int
-var candidateID int
+var isCandidate int
 
 var SendersConn []*net.UDPConn
 var ReceiversConn *net.UDPConn
@@ -44,11 +44,6 @@ func readFileParameters(filepath string) {
 	line, _, err := reader.ReadLine()
 	CheckError(err)
 	nPorts, err = strconv.Atoi(string(line))
-
-	// reading who is candidate
-	line, _, err = reader.ReadLine()
-	CheckError(err)
-	candidateID, err = strconv.Atoi(string(line))
 }
 
 func max(x int, y int) int {
@@ -150,7 +145,7 @@ func initConnections() {
 
 func main() {
 	readFileParameters("params.txt")
-	fmt.Printf("nPorts: %d\ncandidateID: %d\n", nPorts, candidateID)
+	fmt.Printf("nPorts: %d\nisCandidate: %d\n", nPorts, isCandidate)
 
 	initConnections()
 
