@@ -8,6 +8,9 @@ if __name__ == "__main__":
     f.write(str(n_proccess))
     f.close()
 
+    f = open("results.txt", "w")
+    f.close()
+
     for i in range(n_proccess):
         command = "x-terminal-emulator -e go run main.go " + str(i+1) + " "
         if i+1 == candidate:

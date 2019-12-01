@@ -58,26 +58,28 @@ func CheckError(err error) {
 }
 
 func doReceiverJob() {
-	buf := make([]byte, 1024)
+	for {
+		buf := make([]byte, 1024)
 
-	n, _, err := ReceiversConn.ReadFromUDP(buf)
-	CheckError(err)
+		n, _, err := ReceiversConn.ReadFromUDP(buf)
+		CheckError(err)
 
-	var msg MessageStruct
-	err = json.Unmarshal(buf[:n], &msg)
-	CheckError(err)
+		var msg MessageStruct
+		err = json.Unmarshal(buf[:n], &msg)
+		CheckError(err)
 
-	fmt.Println("Received msg.type = ", msg.Type, " from id = ", msg.Id)
+		fmt.Println("Received msg.type = ", msg.Type, " from id = ", msg.Id)
 
-	if msg.Type == "ELECTION" {
-		if msg.Id < myId {
-			doSenderJob(msg.Id, "OK")
-			startElection()
+		if msg.Type == "ELECTION" {
+			if msg.Id < myId {
+				doSenderJob(msg.Id, "OK")
+				startElection()
+			}
+		} else if msg.Type == "OK" {
+			isRunningMyElection = false
+		} else if msg.Type == "CORDINATOR" {
+			cordinatorId = msg.Id
 		}
-	} else if msg.Type == "OK" {
-		isRunningMyElection = false
-	} else if msg.Type == "CORDINATOR" {
-		cordinatorId = msg.Id
 	}
 }
 
@@ -164,7 +166,7 @@ func timerTracker(timer *time.Timer) {
 
 func startElection() {
 	if isRunningMyElection {
-		fmt.Print("erro! isRunningMyElection is true\n")
+		fmt.Print("Erro! isRunningMyElection is true\n")
 	}
 
 	isRunningMyElection = true
@@ -173,6 +175,23 @@ func startElection() {
 	}
 	timer1 = time.NewTimer(2 * time.Second)
 	go timerTracker(timer1)
+}
+
+func printFinalResults() {
+	fmt.Printf("CORDINATOR ID = %d\n", cordinatorId)
+	fmt.Printf("END\n")
+
+	f, err := os.OpenFile("results.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Println(err)
+	}
+	defer f.Close()
+
+	msgToPrint := "Proccess " + strconv.Itoa((myId) + ": coodinator = " + cordinatorId + 
+		", with " + numberSentMessages + " messages sent\n"
+	if _, err := f.WriteString(msgToPrint); err != nil {
+		log.Println(err)
+	}
 }
 
 func main() {
@@ -189,12 +208,9 @@ func main() {
 	if isCandidate {
 		startElection()
 	}
+	go doReceiverJob()
 
-	for cordinatorId == -1{
-		go doReceiverJob()
-		time.Sleep(time.Second * 1)
-	}
+	for cordinatorId == -1 {}
 
-	fmt.Printf("CORDINATOR ID = %d\n", cordinatorId)
-	fmt.Printf("END\n")
+	printFinalResults()
 }
