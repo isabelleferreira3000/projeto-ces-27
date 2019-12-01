@@ -72,7 +72,6 @@ func doReceiverJob() {
 	CheckError(err)
 
 	fmt.Println("Received", otherLogicalClock)
-	myId = logicalClock.Id
 	myClocks := logicalClock.Clocks
 	otherProcessClocks := otherLogicalClock.Clocks
 
