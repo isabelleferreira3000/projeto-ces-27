@@ -12,6 +12,9 @@ import (
 )
 
 // global variables
+var timeToTimeout int
+var timer1 *time.Timer
+
 var err error
 
 var myPort string
@@ -142,6 +145,23 @@ func initConnections() {
 	}
 }
 
+func sendCordinatorMsgs() {
+	for otherProcessId := 1; otherProcessId < nPorts; otherProcessId++ {
+		if otherProcessId != myId {
+			doSenderJob(otherProcessId, "CORDINATOR")
+		}
+	}
+}
+
+func timerTracker(timer *time.Timer) {
+	<-timer.C
+	fmt.Println("Timer expired")
+	if isRunningMyElection {
+		cordinatorId = myId
+		sendCordinatorMsgs()
+	}
+}
+
 func startElection() {
 	if isRunningMyElection {
 		fmt.Print("erro! isRunningMyElection is true\n")
@@ -151,6 +171,8 @@ func startElection() {
 	for otherProcessId := myId + 1; otherProcessId < nPorts + 1; otherProcessId++ {
 		doSenderJob(otherProcessId, "ELECTION")
 	}
+	timer1 = time.NewTimer(2 * time.Second)
+	go timerTracker(timer1)
 }
 
 func main() {
