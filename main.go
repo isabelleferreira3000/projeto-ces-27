@@ -68,7 +68,7 @@ func doReceiverJob() {
 		err = json.Unmarshal(buf[:n], &msg)
 		CheckError(err)
 
-		fmt.Println("Received msg.type = ", msg.Type, " from id = ", msg.Id)
+		fmt.Println("Received msg.type =", msg.Type, "from id =", msg.Id)
 
 		if msg.Type == "ELECTION" {
 			if msg.Id < myId {
@@ -97,7 +97,7 @@ func doSenderJob(otherProcessID int, msgType string) {
 	_, err = SendersConn[otherProcess].Write(jsonRequest)
 	CheckError(err)
 
-	fmt.Println("Sending msg.type = ", msg.Type, " from id = ", msg.Id)
+	fmt.Println("Sending msg.type =", msg.Type, "from id =", msg.Id)
 
 	time.Sleep(time.Second * 1)
 }
