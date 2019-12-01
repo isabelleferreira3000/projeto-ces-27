@@ -23,7 +23,7 @@ var myId int
 var nPorts int
 var isCandidate bool
 var isRunningMyElection bool
-var cordinatorId int
+var coordinatorId int
 var numberSentMessages int
 var SendersConn []*net.UDPConn
 var ReceiversConn *net.UDPConn
@@ -77,8 +77,8 @@ func doReceiverJob() {
 			}
 		} else if msg.Type == "OK" {
 			isRunningMyElection = false
-		} else if msg.Type == "CORDINATOR" {
-			cordinatorId = msg.Id
+		} else if msg.Type == "COORDINATOR" {
+			coordinatorId = msg.Id
 		}
 	}
 }
@@ -104,7 +104,7 @@ func doSenderJob(otherProcessID int, msgType string) {
 
 func initConnections() {
 	numberSentMessages = 0
-	cordinatorId = -1
+	coordinatorId = -1
 
 	// getting my Id
 	myId, err = strconv.Atoi(os.Args[1])
@@ -147,10 +147,10 @@ func initConnections() {
 	}
 }
 
-func sendCordinatorMsgs() {
+func sendCoordinatorMsgs() {
 	for otherProcessId := 1; otherProcessId < nPorts; otherProcessId++ {
 		if otherProcessId != myId {
-			doSenderJob(otherProcessId, "CORDINATOR")
+			doSenderJob(otherProcessId, "COORDINATOR")
 		}
 	}
 }
@@ -159,8 +159,8 @@ func timerTracker(timer *time.Timer) {
 	<-timer.C
 	fmt.Println("Timer expired")
 	if isRunningMyElection {
-		cordinatorId = myId
-		sendCordinatorMsgs()
+		coordinatorId = myId
+		sendCoordinatorMsgs()
 	}
 }
 
@@ -180,7 +180,7 @@ func startElection() {
 }
 
 func printFinalResults() {
-	fmt.Printf("CORDINATOR ID = %d\n", cordinatorId)
+	fmt.Printf("COORDINATOR ID = %d\n", coordinatorId)
 	fmt.Printf("END\n")
 
 	f, err := os.OpenFile("results.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -189,7 +189,7 @@ func printFinalResults() {
 	}
 	defer f.Close()
 
-	msgToPrint := "Proccess " + strconv.Itoa(myId) + ": coodinator = " + strconv.Itoa(cordinatorId) + 
+	msgToPrint := "Proccess " + strconv.Itoa(myId) + ": coodinator = " + strconv.Itoa(coordinatorId) + 
 		", with " + strconv.Itoa(numberSentMessages) + " messages sent\n"
 
 	if _, err := f.WriteString(msgToPrint); err != nil {
@@ -213,7 +213,7 @@ func main() {
 	}
 	go doReceiverJob()
 
-	for cordinatorId == -1 {}
+	for coordinatorId == -1 {}
 
 	printFinalResults()
 }
