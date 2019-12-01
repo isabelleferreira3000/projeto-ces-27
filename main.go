@@ -17,8 +17,8 @@ var myPort string
 
 var nPorts int
 
-var ClientsConn []*net.UDPConn
-var ServerConn *net.UDPConn
+var SendersConn []*net.UDPConn
+var ReceiversConn *net.UDPConn
 
 var ch = make(chan int)
 
@@ -54,10 +54,10 @@ func readInput(ch chan int) {
 	}
 }
 
-func doServerJob() {
+func doReceiverJob() {
 	buf := make([]byte, 1024)
 
-	n, _, err := ServerConn.ReadFromUDP(buf)
+	n, _, err := ReceiversConn.ReadFromUDP(buf)
 	CheckError(err)
 
 	var otherLogicalClock ClockStruct
@@ -78,13 +78,13 @@ func doServerJob() {
 	fmt.Println("logicalClock atualizado:", logicalClock)
 }
 
-func doClientJob(otherProcessID int) {
+func doSenderJob(otherProcessID int) {
 	otherProcess := otherProcessID - 1
 
 	jsonRequest, err := json.Marshal(logicalClock)
 	CheckError(err)
 
-	_, err = ClientsConn[otherProcess].Write(jsonRequest)
+	_, err = SendersConn[otherProcess].Write(jsonRequest)
 	CheckError(err)
 
 	time.Sleep(time.Second * 1)
@@ -115,7 +115,7 @@ func initConnections() {
 	ServerAddr, err := net.ResolveUDPAddr("udp", myPort)
 	CheckError(err)
 	aux, err := net.ListenUDP("udp", ServerAddr)
-	ServerConn = aux
+	ReceiversConn = aux
 	CheckError(err)
 
 	// Clients
@@ -130,7 +130,7 @@ func initConnections() {
 		CheckError(err)
 
 		auxConn, err := net.DialUDP("udp", LocalAddr, ServerAddr)
-		ClientsConn = append(ClientsConn, auxConn)
+		SendersConn = append(SendersConn, auxConn)
 		CheckError(err)
 	}
 }
@@ -138,16 +138,16 @@ func initConnections() {
 func main() {
 	initConnections()
 
-	defer ServerConn.Close()
+	defer ReceiversConn.Close()
 	for i := 0; i < nPorts; i++ {
-		defer ClientsConn[i].Close()
+		defer SendersConn[i].Close()
 	}
 
 	go readInput(ch)
 
 	for {
 		// Server
-		go doServerJob()
+		go doReceiverJob()
 
 		select {
 		case processID, valid := <-ch:
@@ -160,7 +160,7 @@ func main() {
 					fmt.Printf("logicalClock atualizado: %d \n", logicalClock)
 				} else {
 					fmt.Printf("logicalClock enviado: %d \n", logicalClock)
-					go doClientJob(processID)
+					go doSenderJob(processID)
 				}
 
 			} else {
