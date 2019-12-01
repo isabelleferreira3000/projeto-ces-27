@@ -1,6 +1,5 @@
 package main
 
-// por enqnto só tem o código da tarefa 2 do lab 1
 import (
 	"bufio"
 	"encoding/json"
@@ -160,6 +159,13 @@ func main() {
 	for {
 		// Server
 		go doReceiverJob()
+
+		if isCandidate {
+			otherProcessId := myId + 1
+			for otherProcessId < nPorts + 1 {
+				doSenderJob(otherProcessId, "ELECTION")
+			}
+		}
 
 		select {
 		case processID, valid := <-ch:
