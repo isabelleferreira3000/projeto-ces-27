@@ -1,6 +1,15 @@
 import os
 from time import sleep
 
+
+def file_len(fname):
+    i = -1
+    with open(fname, "r") as f:
+        for i, l in enumerate(f):
+            pass
+    return i + 1
+
+
 if __name__ == "__main__":
     n_proccess = input("Qual o numero de processos? ")
     candidate = input("Quem iniciara a eleicao? ")
@@ -23,5 +32,16 @@ if __name__ == "__main__":
     print(command)
     os.system(command)
 
-    print("After")
-    sleep(2)
+    while file_len("results.txt") != n_proccess:
+        pass
+
+    with open("results.txt", "r") as f:
+        lines = f.readlines()
+        lines.sort()
+
+    total_messages = 0
+    with open("results.txt", "w") as f:
+        for line in lines:
+            f.write(line)
+            print(line.split())
+            number_of_messages += int(line.split())
