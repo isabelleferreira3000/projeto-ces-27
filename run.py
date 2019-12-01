@@ -15,9 +15,8 @@ if __name__ == "__main__":
         command = "x-terminal-emulator -e go run main.go " + str(i+1) + " "
         if i+1 != candidate:
             command += "0"            
-
-        print(command)
-        os.system(command)
+            print(command)
+            os.system(command)
 
     command = "x-terminal-emulator -e go run main.go " + str(candidate) + " 1"
     print(command)
