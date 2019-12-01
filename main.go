@@ -16,6 +16,7 @@ import (
 var err error
 
 var myPort string
+var myId int
 
 var nPorts int
 var isCandidate bool
@@ -71,7 +72,7 @@ func doReceiverJob() {
 	CheckError(err)
 
 	fmt.Println("Received", otherLogicalClock)
-	myId := logicalClock.Id
+	myId = logicalClock.Id
 	myClocks := logicalClock.Clocks
 	otherProcessClocks := otherLogicalClock.Clocks
 
@@ -84,12 +85,14 @@ func doReceiverJob() {
 	fmt.Println("logicalClock atualizado:", logicalClock)
 }
 
-func doSenderJob(otherProcessID int) {
+func doSenderJob(otherProcessID int, msgType string) {
 	otherProcess := otherProcessID - 1
 
 	var msg MessageStruct
+	msg.Type = msgType
+	msg.Id = 
 
-	jsonRequest, err := json.Marshal(logicalClock)
+	jsonRequest, err := json.Marshal(MessageStruct)
 	CheckError(err)
 
 	numberSentMessages ++
@@ -162,9 +165,6 @@ func main() {
 		select {
 		case processID, valid := <-ch:
 			if valid {
-				// updating my clock
-				myId := logicalClock.Id
-				logicalClock.Clocks[myId-1]++
 				// Clients
 				if processID == myId {
 					fmt.Printf("logicalClock atualizado: %d \n", logicalClock)
