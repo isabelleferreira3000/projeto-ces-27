@@ -13,6 +13,8 @@ import (
 )
 
 // global variables
+var err error
+
 var myPort string
 
 var nPorts int
@@ -114,9 +116,8 @@ func initConnections() {
 	nPorts = len(os.Args) - 2
 
 	// getting my Id
-	auxMyId, err := strconv.Atoi(os.Args[1])
+	myId, err := strconv.Atoi(os.Args[1])
 	CheckError(err)
-	myId := auxMyId
 
 	// getting my port
 	myPort = os.Args[myId + 1]
@@ -141,6 +142,8 @@ func initConnections() {
 	// Clients
 	for i := 0; i < nPorts; i++ {
 		// getting each port
+		abPort := ":" + strconv.Itoa(10001+i)
+		fmt.Printf("aPort: %s\n", abPort)
 		aPort := os.Args[i+2]
 
 		ServerAddr, err := net.ResolveUDPAddr("udp","127.0.0.1" + aPort)
@@ -157,7 +160,7 @@ func initConnections() {
 
 func main() {
 	readFileParameters("params.txt")
-	fmt.Printf("nPorts: %d\ncandidateID: %d", nPorts, candidateID)
+	fmt.Printf("nPorts: %d\ncandidateID: %d\n", nPorts, candidateID)
 
 	initConnections()
 
