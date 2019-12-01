@@ -45,14 +45,6 @@ func readFileParameters(filepath string) {
 	nPorts, err = strconv.Atoi(string(line))
 }
 
-func max(x int, y int) int {
-	if x >= y {
-		return x
-	} else {
-		return y
-	}
-}
-
 func CheckError(err error) {
 	if err != nil {
 		fmt.Println("Erro: ", err)
@@ -123,7 +115,6 @@ func initConnections() {
 		// getting each port
 		aPort := ":" + strconv.Itoa(10001+i)
 		fmt.Printf("aPort: %s\n", aPort)
-		//aPort := os.Args[i+2]
 
 		ServerAddr, err := net.ResolveUDPAddr("udp","127.0.0.1" + aPort)
 		CheckError(err)
@@ -147,34 +138,15 @@ func main() {
 	for i := 0; i < nPorts; i++ {
 		defer SendersConn[i].Close()
 	}
-	
+
+	if isCandidate {
+		for otherProcessId := myId + 1; otherProcessId < nPorts + 1; otherProcessId++ {
+			doSenderJob(otherProcessId, "ELECTION")
+		}
+	}
+
 	for {
-		// Server
 		go doReceiverJob()
-
-		if isCandidate {
-			otherProcessId := myId + 1
-			for otherProcessId < nPorts + 1 {
-				doSenderJob(otherProcessId, "ELECTION")
-			}
-		}
-
-		select {
-		case processID, valid := <-ch:
-			if valid {
-				// Clients
-				if processID == myId {
-					fmt.Printf("logicalClock atualizado: %d \n", logicalClock)
-				} else {
-					fmt.Printf("logicalClock enviado: %d \n", logicalClock)
-					go doSenderJob(processID)
-				}
-
-			} else {
-				fmt.Println("Channel closed!")
-			}
-		default:
-			time.Sleep(time.Second * 1)
-		}
+		time.Sleep(time.Second * 1)
 	}
 }
