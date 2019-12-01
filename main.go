@@ -12,7 +12,7 @@ import (
 )
 
 // global variables
-var timer1 *time.Timer
+var electionTimer *time.Timer
 
 var err error
 
@@ -158,9 +158,9 @@ func sendCoordinatorMsgs() {
 	}
 }
 
-func timerTracker(timer *time.Timer) {
+func electionTimerTracker(timer *time.Timer) {
 	<-timer.C
-	fmt.Println("Timer expired")
+	fmt.Println("Election Timer expired")
 	if isRunningMyElection {
 		coordinatorId = myId
 		sendCoordinatorMsgs()
@@ -175,8 +175,8 @@ func startElection() {
 		for otherProcessId := myId + 1; otherProcessId < nPorts+1; otherProcessId++ {
 			doSenderJob(otherProcessId, "ELECTION")
 		}
-		timer1 = time.NewTimer(2 * time.Second)
-		go timerTracker(timer1)
+		electionTimer = time.NewTimer(2 * time.Second)
+		go electionTimerTracker(electionTimer)
 	}
 }
 
