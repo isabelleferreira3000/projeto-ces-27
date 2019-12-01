@@ -61,6 +61,9 @@ func doReceiverJob() {
 		buf := make([]byte, 1024)
 
 		n, _, err := ReceiversConn.ReadFromUDP(buf)
+		if err != nil {
+			break
+		}
 		CheckError(err)
 
 		var msg MessageStruct
@@ -78,6 +81,7 @@ func doReceiverJob() {
 			isRunningMyElection = false
 		} else if msg.Type == "COORDINATOR" {
 			coordinatorId = msg.Id
+			break
 		}
 	}
 }
