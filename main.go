@@ -113,7 +113,7 @@ func doSenderJob(otherProcessID int) {
 }
 
 func initConnections() {
-	nPorts = len(os.Args) - 2
+	//nPorts = len(os.Args) - 2
 
 	// getting my Id
 	myId, err := strconv.Atoi(os.Args[1])
@@ -142,9 +142,9 @@ func initConnections() {
 	// Clients
 	for i := 0; i < nPorts; i++ {
 		// getting each port
-		abPort := ":" + strconv.Itoa(10001+i)
-		fmt.Printf("aPort: %s\n", abPort)
-		aPort := os.Args[i+2]
+		aPort := ":" + strconv.Itoa(10001+i)
+		fmt.Printf("aPort: %s\n", aPort)
+		//aPort := os.Args[i+2]
 
 		ServerAddr, err := net.ResolveUDPAddr("udp","127.0.0.1" + aPort)
 		CheckError(err)
