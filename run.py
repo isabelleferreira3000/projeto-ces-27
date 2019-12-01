@@ -1,4 +1,5 @@
 import os
+from time import sleep
 
 if __name__ == "__main__":
     n_proccess = input("Qual o numero de processos? ")
@@ -12,12 +13,15 @@ if __name__ == "__main__":
     f.close()
 
     for i in range(n_proccess):
-        command = "x-terminal-emulator -e go run main.go " + str(i+1) + " "
+        command = "x-terminal-emulator -e /usr/local/go/bin/go run main.go " + str(i+1) + " "
         if i+1 != candidate:
             command += "0"            
             print(command)
             os.system(command)
 
-    command = "x-terminal-emulator -e go run main.go " + str(candidate) + " 1"
+    command = "x-terminal-emulator -e /usr/local/go/bin/go run main.go " + str(candidate) + " 1"
     print(command)
     os.system(command)
+
+    print("After")
+    sleep(2)

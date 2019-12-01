@@ -100,7 +100,7 @@ func doSenderJob(otherProcessID int, msgType string) {
 	_, err = SendersConn[otherProcess].Write(jsonRequest)
 	CheckError(err)
 
-	fmt.Println("Sending msg.type =", msg.Type, "from id =", msg.Id)
+	fmt.Println("Sending msg.type =", msg.Type, "to id =", otherProcessID)
 
 	time.Sleep(time.Second * 1)
 }
@@ -218,5 +218,5 @@ func main() {
 
 	printFinalResults()
 
-	time.Sleep(1 * time.Second)
+	time.Sleep(10 * time.Second)
 }
