@@ -18,7 +18,7 @@ var err error
 var myPort string
 
 var nPorts int
-var isCandidate int
+var isCandidate bool
 
 var SendersConn []*net.UDPConn
 var ReceiversConn *net.UDPConn
@@ -98,14 +98,22 @@ func doSenderJob(otherProcessID int) {
 }
 
 func initConnections() {
-	//nPorts = len(os.Args) - 2
-
 	// getting my Id
 	myId, err := strconv.Atoi(os.Args[1])
 	CheckError(err)
 
+	// getting if is candidate
+	isCandidateAux, err := strconv.Atoi(os.Args[2])
+	CheckError(err)
+	if isCandidateAux == 1 {
+		isCandidate = true
+	} else {
+		isCandidate = false
+	}
+	fmt.Print("isCandidate: ", isCandidate, "\n")
+
 	// getting my port
-	myPort = os.Args[myId + 1]
+	myPort = ":" + strconv.Itoa(10000+myId)
 
 	// creating logicalClock
 	var clocks []int
@@ -118,10 +126,9 @@ func initConnections() {
 	}
 
 	// Server
-	ServerAddr, err := net.ResolveUDPAddr("udp", myPort)
+	ReceiverAddr, err := net.ResolveUDPAddr("udp", myPort)
 	CheckError(err)
-	aux, err := net.ListenUDP("udp", ServerAddr)
-	ReceiversConn = aux
+	ReceiversConn, err = net.ListenUDP("udp", ReceiverAddr)
 	CheckError(err)
 
 	// Clients
@@ -145,7 +152,7 @@ func initConnections() {
 
 func main() {
 	readFileParameters("params.txt")
-	fmt.Printf("nPorts: %d\nisCandidate: %d\n", nPorts, isCandidate)
+	fmt.Printf("nPorts: %d\n", nPorts)
 
 	initConnections()
 
