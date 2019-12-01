@@ -70,7 +70,7 @@ func doReceiverJob() {
 	err = json.Unmarshal(buf[:n], &msg)
 	CheckError(err)
 
-	fmt.Println("Received", msg)
+	fmt.Println("Received msg.type = ", msg.Type, " from id = ", msg.Id)
 }
 
 func doSenderJob(otherProcessID int, msgType string) {
@@ -86,6 +86,8 @@ func doSenderJob(otherProcessID int, msgType string) {
 	numberSentMessages ++
 	_, err = SendersConn[otherProcess].Write(jsonRequest)
 	CheckError(err)
+
+	fmt.Println("Sending msg.type = ", msg.Type, " from id = ", msg.Id)
 
 	time.Sleep(time.Second * 1)
 }
@@ -145,7 +147,7 @@ func main() {
 	for i := 0; i < nPorts; i++ {
 		defer SendersConn[i].Close()
 	}
-
+	
 	for {
 		// Server
 		go doReceiverJob()
