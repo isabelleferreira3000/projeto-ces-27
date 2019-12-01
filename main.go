@@ -1,6 +1,6 @@
-package projeto
+package main
 
-// por enqnto só tem o código do lab 2
+// por enqnto só tem o código da tarefa 2 do lab 1
 import (
 	"bufio"
 	"encoding/json"
