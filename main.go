@@ -67,21 +67,11 @@ func doReceiverJob() {
 	n, _, err := ReceiversConn.ReadFromUDP(buf)
 	CheckError(err)
 
-	var otherLogicalClock MessageStruct
-	err = json.Unmarshal(buf[:n], &otherLogicalClock)
+	var msg MessageStruct
+	err = json.Unmarshal(buf[:n], &msg)
 	CheckError(err)
 
-	fmt.Println("Received", otherLogicalClock)
-	myClocks := logicalClock.Clocks
-	otherProcessClocks := otherLogicalClock.Clocks
-
-	// updating clocks
-	logicalClock.Clocks[myId-1]++
-	for i := 0; i < nPorts; i++ {
-		logicalClock.Clocks[i] = max(otherProcessClocks[i], myClocks[i])
-	}
-
-	fmt.Println("logicalClock atualizado:", logicalClock)
+	fmt.Println("Received", msg)
 }
 
 func doSenderJob(otherProcessID int, msgType string) {
@@ -89,9 +79,9 @@ func doSenderJob(otherProcessID int, msgType string) {
 
 	var msg MessageStruct
 	msg.Type = msgType
-	msg.Id = 
+	msg.Id = myId
 
-	jsonRequest, err := json.Marshal(MessageStruct)
+	jsonRequest, err := json.Marshal(msg)
 	CheckError(err)
 
 	numberSentMessages ++
