@@ -12,7 +12,6 @@ import (
 )
 
 // global variables
-var timeToTimeout int
 var timer1 *time.Timer
 
 var err error
@@ -167,16 +166,14 @@ func timerTracker(timer *time.Timer) {
 func startElection() {
 	fmt.Printf("Starting election\n")
 
-	if isRunningMyElection {
-		fmt.Print("Erro! isRunningMyElection is true\n")
+	if !isRunningMyElection {
+		isRunningMyElection = true
+		for otherProcessId := myId + 1; otherProcessId < nPorts+1; otherProcessId++ {
+			doSenderJob(otherProcessId, "ELECTION")
+		}
+		timer1 = time.NewTimer(2 * time.Second)
+		go timerTracker(timer1)
 	}
-
-	isRunningMyElection = true
-	for otherProcessId := myId + 1; otherProcessId < nPorts + 1; otherProcessId++ {
-		doSenderJob(otherProcessId, "ELECTION")
-	}
-	timer1 = time.NewTimer(2 * time.Second)
-	go timerTracker(timer1)
 }
 
 func printFinalResults() {

@@ -1,8 +1,0 @@
-Proccess 0: coodinator = 0, with 4 messages sent
-Proccess 0: coodinator = 0, with 0 messages sent
-Proccess 0: coodinator = 0, with 0 messages sent
-Proccess 0: coodinator = 0, with 4 messages sent
-Proccess 0: coodinator = 0, with 4 messages sent
-Proccess 0: coodinator = 0, with 0 messages sent
-Proccess 3: coodinator = 3, with 0 messages sent
-Proccess 1: coodinator = 3, with 0 messages sent
