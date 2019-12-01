@@ -183,14 +183,15 @@ func printFinalResults() {
 
 	f, err := os.OpenFile("results.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 	}
 	defer f.Close()
 
-	msgToPrint := "Proccess " + strconv.Itoa((myId) + ": coodinator = " + cordinatorId + 
-		", with " + numberSentMessages + " messages sent\n"
+	msgToPrint := "Proccess " + strconv.Itoa(myId) + ": coodinator = " + strconv.Itoa(cordinatorId) + 
+		", with " + strconv.Itoa(numberSentMessages) + " messages sent\n"
+
 	if _, err := f.WriteString(msgToPrint); err != nil {
-		log.Println(err)
+		fmt.Println(err)
 	}
 }
 
