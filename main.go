@@ -29,6 +29,27 @@ type ClockStruct struct {
 var logicalClock ClockStruct
 
 // auxiliary functions
+func readFileParameters(filepath string) {
+	file, err := os.Open(filepath)
+	CheckError(err)
+
+	defer file.Close()
+
+	reader := bufio.NewReader(file)
+
+	// reading number of ports
+	line, _, err := reader.ReadLine()
+	CheckError(err)
+	nPorts, err = strconv.Atoi(string(line))
+
+	// reading who is candidate
+	line, _, err = reader.ReadLine()
+	CheckError(err)
+	candidateID, err := strconv.Atoi(string(line))
+
+	fmt.Printf("nPorts: %d\ncandidateID: %d", nPorts, candidateID)
+}
+
 func max(x int, y int) int {
 	if x >= y {
 		return x
@@ -136,6 +157,7 @@ func initConnections() {
 }
 
 func main() {
+	readFileParameters("example.txt")
 	initConnections()
 
 	defer ReceiversConn.Close()
