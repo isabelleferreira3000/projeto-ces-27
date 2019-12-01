@@ -66,16 +66,6 @@ func CheckError(err error) {
 	}
 }
 
-func readInput(ch chan int) {
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		text, _, _ := reader.ReadLine()
-		aux, err := strconv.Atoi(string(text))
-		CheckError(err)
-		ch <- aux
-	}
-}
-
 func doReceiverJob() {
 	buf := make([]byte, 1024)
 
@@ -168,8 +158,6 @@ func main() {
 	for i := 0; i < nPorts; i++ {
 		defer SendersConn[i].Close()
 	}
-
-	go readInput(ch)
 
 	for {
 		// Server

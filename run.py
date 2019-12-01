@@ -6,8 +6,6 @@ if __name__ == "__main__":
 
     f = open("params.txt", "w")
     f.write(str(n_proccess))
-    f.write("\n")
-    f.write(str(candidate))
     f.close()
 
     for i in range(n_proccess):
