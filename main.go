@@ -19,17 +19,16 @@ var myPort string
 
 var nPorts int
 var isCandidate bool
-
+var numberSentMessages int
 var SendersConn []*net.UDPConn
 var ReceiversConn *net.UDPConn
 
 var ch = make(chan int)
 
-type ClockStruct struct {
+type MessageStruct struct {
 	Id int
-	Clocks []int
+	Type string
 }
-var logicalClock ClockStruct
 
 // auxiliary functions
 func readFileParameters(filepath string) {
@@ -67,7 +66,7 @@ func doReceiverJob() {
 	n, _, err := ReceiversConn.ReadFromUDP(buf)
 	CheckError(err)
 
-	var otherLogicalClock ClockStruct
+	var otherLogicalClock MessageStruct
 	err = json.Unmarshal(buf[:n], &otherLogicalClock)
 	CheckError(err)
 
@@ -88,9 +87,12 @@ func doReceiverJob() {
 func doSenderJob(otherProcessID int) {
 	otherProcess := otherProcessID - 1
 
+	var msg MessageStruct
+
 	jsonRequest, err := json.Marshal(logicalClock)
 	CheckError(err)
 
+	numberSentMessages ++
 	_, err = SendersConn[otherProcess].Write(jsonRequest)
 	CheckError(err)
 
@@ -98,6 +100,8 @@ func doSenderJob(otherProcessID int) {
 }
 
 func initConnections() {
+	numberSentMessages = 0
+
 	// getting my Id
 	myId, err := strconv.Atoi(os.Args[1])
 	CheckError(err)
@@ -114,16 +118,6 @@ func initConnections() {
 
 	// getting my port
 	myPort = ":" + strconv.Itoa(10000+myId)
-
-	// creating logicalClock
-	var clocks []int
-	for i := 0; i < nPorts; i++ {
-		clocks = append(clocks, 0)
-	}
-	logicalClock = ClockStruct{
-		myId,
-		clocks,
-	}
 
 	// Server
 	ReceiverAddr, err := net.ResolveUDPAddr("udp", myPort)
