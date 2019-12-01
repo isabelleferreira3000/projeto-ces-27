@@ -57,7 +57,7 @@ func CheckError(err error) {
 }
 
 func doReceiverJob() {
-	for {
+	for coordinatorId == -1 {
 		buf := make([]byte, 1024)
 
 		n, _, err := ReceiversConn.ReadFromUDP(buf)
@@ -213,4 +213,6 @@ func main() {
 	for coordinatorId == -1 {}
 
 	printFinalResults()
+
+	time.Sleep(1 * time.Second)
 }

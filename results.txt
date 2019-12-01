@@ -1,0 +1,5 @@
+Proccess 2: coodinator = 2, with 0 messages sent
+Proccess 2: coodinator = 2, with 0 messages sent
+Proccess 1: coodinator = 2, with 0 messages sent
+Proccess 2: coodinator = 2, with 0 messages sent
+Proccess 1: coodinator = 2, with 0 messages sent
