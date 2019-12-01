@@ -102,7 +102,7 @@ func doSenderJob(otherProcessID int, msgType string) {
 
 	fmt.Println("Sending msg.type =", msg.Type, "to id =", otherProcessID)
 
-	time.Sleep(time.Second * 1)
+	// time.Sleep(time.Second * 1)
 }
 
 func initConnections() {

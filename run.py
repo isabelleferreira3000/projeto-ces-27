@@ -43,5 +43,5 @@ if __name__ == "__main__":
     with open("results.txt", "w") as f:
         for line in lines:
             f.write(line)
-            print(line.split())
-            number_of_messages += int(line.split())
+            total_messages += int(line.split("with ")[1].split(" ")[0])
+        f.write("Total messages = " + str(total_messages))
