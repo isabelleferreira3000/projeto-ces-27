@@ -107,7 +107,7 @@ func initConnections() {
 	cordinatorId = -1
 
 	// getting my Id
-	myId, err := strconv.Atoi(os.Args[1])
+	myId, err = strconv.Atoi(os.Args[1])
 	CheckError(err)
 
 	// getting if is candidate
@@ -165,6 +165,8 @@ func timerTracker(timer *time.Timer) {
 }
 
 func startElection() {
+	fmt.Printf("Starting election\n")
+
 	if isRunningMyElection {
 		fmt.Print("Erro! isRunningMyElection is true\n")
 	}
