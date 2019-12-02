@@ -9,6 +9,9 @@ import (
 	"strconv"
 	_ "strconv"
 	"time"
+	"io"
+	//"io/ioutil"
+	//"strings"
 )
 
 // global variables
@@ -26,10 +29,14 @@ var coordinatorId int
 var numberSentMessages int
 var SendersConn []*net.UDPConn
 var ReceiversConn *net.UDPConn
+var parent int
+var child1 int
+var child2 int
 
 var ch = make(chan int)
 
 type MessageStruct struct {
+	Coord int
 	Id int
 	Type string
 }
@@ -47,6 +54,20 @@ func readFileParameters(filepath string) {
 	line, _, err := reader.ReadLine()
 	CheckError(err)
 	nPorts, err = strconv.Atoi(string(line))
+}
+
+func ReadInts(r io.Reader) ([]int, error) {
+    scanner := bufio.NewScanner(r)
+    scanner.Split(bufio.ScanWords)
+    var result []int
+    for scanner.Scan() {
+        x, err := strconv.Atoi(scanner.Text())
+        if err != nil {
+            return result, err
+        }
+        result = append(result, x)
+    }
+    return result, scanner.Err()
 }
 
 func CheckError(err error) {
@@ -74,24 +95,26 @@ func doReceiverJob() {
 
 		if msg.Type == "ELECTION" {
 			if msg.Id < myId {
-				doSenderJob(msg.Id, "OK")
+				doSenderJob(msg.Id, "OK", myId)
 				startElection()
 			}
 		} else if msg.Type == "OK" {
 			isRunningMyElection = false
 		} else if msg.Type == "COORDINATOR" {
-			coordinatorId = msg.Id
+			coordinatorId = msg.Coord
+			sendCoordinatorMsgs()
 			break
 		}
 	}
 }
 
-func doSenderJob(otherProcessID int, msgType string) {
+func doSenderJob(otherProcessID int, msgType string, coordID int) {
 	otherProcess := otherProcessID - 1
 
 	var msg MessageStruct
 	msg.Type = msgType
 	msg.Id = myId
+	msg.Coord = coordID
 
 	jsonRequest, err := json.Marshal(msg)
 	CheckError(err)
@@ -151,10 +174,11 @@ func initConnections() {
 }
 
 func sendCoordinatorMsgs() {
-	for otherProcessId := 1; otherProcessId < nPorts; otherProcessId++ {
-		if otherProcessId != myId {
-			doSenderJob(otherProcessId, "COORDINATOR")
-		}
+	if(child1 >= 0){
+		doSenderJob(child1, "COORDINATOR", coordinatorId)
+	}
+	if(child2 >= 0){
+		doSenderJob(child2, "COORDINATOR", coordinatorId)
 	}
 }
 
@@ -172,8 +196,8 @@ func startElection() {
 
 	if !isRunningMyElection {
 		isRunningMyElection = true
-		for otherProcessId := myId + 1; otherProcessId < nPorts+1; otherProcessId++ {
-			doSenderJob(otherProcessId, "ELECTION")
+		if(parent >= 0){
+			doSenderJob(parent, "ELECTION", myId)
 		}
 		electionTimer = time.NewTimer(1 * time.Second)
 		go electionTimerTracker(electionTimer)
@@ -201,8 +225,21 @@ func printFinalResults() {
 func main() {
 	readFileParameters("params.txt")
 	fmt.Printf("nPorts: %d\n", nPorts)
+	heapInfo, _ := os.Open("heap.txt")
+	ints, _ := ReadInts(heapInfo)
 
 	initConnections()
+	
+	for i := 0; i < nPorts; i++ {
+    	if(myId == ints[4*i]){
+    		parent = ints[4*i + 1]
+    		child1 = ints[4*i + 2]
+    		child2 = ints[4*i + 3]
+    	}
+    }
+    fmt.Println("parent", parent)
+    fmt.Println("child1", child1)
+    fmt.Println("child2", child2)
 
 	defer ReceiversConn.Close()
 	for i := 0; i < nPorts; i++ {
