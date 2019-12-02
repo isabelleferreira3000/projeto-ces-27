@@ -216,7 +216,7 @@ func main() {
 
 	for coordinatorId == -1 {}
 
-	printFinalResults()
+	defer printFinalResults()
 
 	time.Sleep(10 * time.Second)
 }
