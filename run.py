@@ -28,6 +28,7 @@ def run_algorithm(bullyType, n_proccess, candidate):
             print(command)
             os.system(command)
 
+    sleep(5)
     command = "x-terminal-emulator -x /usr/local/go/bin/go run " + bullyType + ".go " + str(candidate) + " 1"
     print(command)
     os.system(command)
