@@ -184,7 +184,7 @@ func printFinalResults() {
 	fmt.Printf("COORDINATOR ID = %d\n", coordinatorId)
 	fmt.Printf("END\n")
 
-	f, err := os.OpenFile("results.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile("results/BullyNormal/" + strconv.Itoa(nPorts) + ".txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		fmt.Println(err)
 	}
