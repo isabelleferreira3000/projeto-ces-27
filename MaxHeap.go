@@ -9,6 +9,7 @@ import (
 )
 
 var nPorts int
+var nMessages int
 
 func CheckError(err error) {
 	if err != nil {
@@ -64,6 +65,7 @@ func (h *heap) heapSize() int{
 }
 
 func siftUp(firstNode *node) {
+	nMessages ++
 	switch {
 	case firstNode.leftChild != nil && firstNode.rightChild != nil:
 		if firstNode.leftChild.value > firstNode.rightChild.value {
@@ -177,10 +179,15 @@ func main(){
 	readFileParameters("params.txt")
 
 	for i := 1; i < nPorts+1 ; i++ {
+		nMessages = 0
 		heapush.insert(i)
 	}
 
 	// heapush.printHeap()
 	// fmt.Printf("The max value is %d\n", heapush.getMax().value)
+	
 	heapush.printHeapInFile()
+
+	// print("nMessages = ", 2*(nMessages-1), "\n")
+	print("nMessages with brother = ", 2*(nMessages), "\n")
 }
