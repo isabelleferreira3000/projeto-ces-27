@@ -15,8 +15,8 @@ def run_algorithm(bullyType):
     n_proccess = -1
     candidate = -1
     if len(sys.argv) == 1:
-        n_proccess = input("Qual o numero de processos? ")
-        candidate = input("Quem iniciara a eleicao? ")
+        n_proccess = int(input("Qual o numero de processos? "))
+        candidate = int(input("Quem iniciara a eleicao? "))
     else:
         n_proccess = int(sys.argv[1])
         candidate = int(sys.argv[2])
