@@ -130,21 +130,45 @@ func readFileParameters(filepath string) {
 	nPorts, err = strconv.Atoi(string(line))
 }
 
-func printHeap() {
-	heapush.printHeap()
-	fmt.Printf("The max value is %d\n", heapush.getMax().value)
-
+func (h *heap) printHeapInFile() {
 	f, err := os.OpenFile("heap.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer f.Close()
 
-	msgToPrint := "Proccess " + strconv.Itoa(myId) + ": coodinator = " + strconv.Itoa(coordinatorId) +
-		", with " + strconv.Itoa(numberSentMessages) + " messages sent\n"
+	msgToPrint := ""
 
-	if _, err := f.WriteString(msgToPrint); err != nil {
-		fmt.Println(err)
+	for i := 0; i < nPorts; i++ {
+		id := h.nodes[i].value
+		parent := h.nodes[i].parent
+		leftChild := h.nodes[i].leftChild
+		rightChild := h.nodes[i].rightChild
+
+		msgToPrint = strconv.Itoa(id) + " "
+
+		if parent != nil {
+			msgToPrint += strconv.Itoa(parent.value) + " "
+		} else {
+			msgToPrint += strconv.Itoa(-1) + " "
+		}
+
+		if leftChild != nil {
+			msgToPrint += strconv.Itoa(leftChild.value) + " "
+		} else {
+			msgToPrint += strconv.Itoa(-1) + " "
+		}
+
+		if rightChild != nil {
+			msgToPrint += strconv.Itoa(rightChild.value) + "\n"
+		} else {
+			msgToPrint += strconv.Itoa(-1) + "\n"
+		}
+		fmt.Printf("%s", msgToPrint)
+
+		if _, err := f.WriteString(msgToPrint); err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
@@ -156,5 +180,7 @@ func main(){
 		heapush.insert(i)
 	}
 
-	printHeap()
+	// heapush.printHeap()
+	// fmt.Printf("The max value is %d\n", heapush.getMax().value)
+	heapush.printHeapInFile()
 }
