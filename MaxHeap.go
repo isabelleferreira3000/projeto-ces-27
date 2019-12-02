@@ -3,7 +3,19 @@ package main
 import (
 	"math"
 	"fmt"
+	"os"
+	"bufio"
+	"strconv"
 )
+
+var nPorts int
+
+func CheckError(err error) {
+	if err != nil {
+		fmt.Println("Erro: ", err)
+		os.Exit(0)
+	}
+}
 
 // implementation of a max heap
 
@@ -104,18 +116,45 @@ func (h *heap) getMax() *node {
 	return h.nodes[0]
 }
 
-func main(){
-	heapush := heap{}
-	
-	heapush.insert(2)
-	heapush.insert(7)
-	heapush.insert(1)
-	heapush.insert(36)
-	heapush.insert(100)
-	heapush.insert(19)
-	heapush.insert(17)
-	heapush.insert(3)
-	heapush.insert(25)
+func readFileParameters(filepath string) {
+	file, err := os.Open(filepath)
+	CheckError(err)
+
+	defer file.Close()
+
+	reader := bufio.NewReader(file)
+
+	// reading number of ports
+	line, _, err := reader.ReadLine()
+	CheckError(err)
+	nPorts, err = strconv.Atoi(string(line))
+}
+
+func printHeap() {
 	heapush.printHeap()
 	fmt.Printf("The max value is %d\n", heapush.getMax().value)
+
+	f, err := os.OpenFile("heap.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer f.Close()
+
+	msgToPrint := "Proccess " + strconv.Itoa(myId) + ": coodinator = " + strconv.Itoa(coordinatorId) +
+		", with " + strconv.Itoa(numberSentMessages) + " messages sent\n"
+
+	if _, err := f.WriteString(msgToPrint); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func main(){
+	heapush := heap{}
+	readFileParameters("params.txt")
+
+	for i := 1; i < nPorts+1 ; i++ {
+		heapush.insert(i)
+	}
+
+	printHeap()
 }
