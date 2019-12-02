@@ -119,6 +119,8 @@ func doSenderJob(otherProcessID int, msgType string, coordID int) {
 	jsonRequest, err := json.Marshal(msg)
 	CheckError(err)
 
+	fmt.Println("Msgtype = " + msgType + ", coordId = " + strconv.Itoa(coordID) + " and otherProccessId = " + 
+		strconv.Itoa(otherProcessID) +"\n")
 	numberSentMessages ++
 	_, err = SendersConn[otherProcess].Write(jsonRequest)
 	CheckError(err)
@@ -253,7 +255,7 @@ func main() {
 
 	for coordinatorId == -1 {}
 
-	printFinalResults()
+	defer printFinalResults()
 
 	time.Sleep(10 * time.Second)
 }

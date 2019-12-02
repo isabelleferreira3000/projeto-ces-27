@@ -91,8 +91,15 @@ if __name__ == "__main__":
         # run_algorithm("BullyImproved", n_proccess, candidate)
     else:
         n_proccess = int(sys.argv[1])
+        # for i in range(1, n_proccess+1):
+        #     run_algorithm("BullyNormal", i, 1)
+        # buildResults("BullyNormal")
         for i in range(1, n_proccess+1):
-            run_algorithm("BullyNormal", i, 1)
+            command = "x-terminal-emulator -x /usr/local/go/bin/go run MaxHeap.go"
+            print(command)
+            os.system(command)
+            run_algorithm("BullyImproved", i, 1)
         buildResults("BullyNormal")
+
         # run_algorithm("BullyImproved", n_proccess, candidate)
         # buildResults("BullyImproved")
