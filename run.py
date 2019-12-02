@@ -29,7 +29,7 @@ def run_algorithm(bullyType):
     f.write(str(n_proccess))
     f.close()
 
-    results_filename = "results/results_" + str(n_proccess) + "_" + str(candidate) + ".txt"
+    results_filename = "results/" + bullyType + "/" + str(n_proccess) + "_" + str(candidate) + ".txt"
 
     f = open(results_filename, "w")
     f.close()
@@ -62,3 +62,4 @@ def run_algorithm(bullyType):
 
 if __name__ == "__main__":
     run_algorithm("BullyNormal")
+    # run_algorithm("BullyImproved")
