@@ -175,7 +175,7 @@ func startElection() {
 		for otherProcessId := myId + 1; otherProcessId < nPorts+1; otherProcessId++ {
 			doSenderJob(otherProcessId, "ELECTION")
 		}
-		electionTimer = time.NewTimer(2 * time.Second)
+		electionTimer = time.NewTimer(0.5 * time.Second)
 		go electionTimerTracker(electionTimer)
 	}
 }

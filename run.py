@@ -90,9 +90,8 @@ if __name__ == "__main__":
         # run_algorithm("BullyImproved", n_proccess, candidate)
     else:
         n_proccess = int(sys.argv[1])
-        candidate = int(sys.argv[2])
-        for i in range(1, n_proccess):
-            run_algorithm("BullyNormal", i, candidate)
+        for i in range(1, n_proccess+1):
+            run_algorithm("BullyNormal", i, 1)
         buildResults("BullyNormal")
         # run_algorithm("BullyImproved", n_proccess, candidate)
         # buildResults("BullyImproved")
