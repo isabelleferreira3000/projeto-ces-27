@@ -218,5 +218,5 @@ func main() {
 
 	printFinalResults()
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(5 * time.Second)
 }

@@ -11,20 +11,7 @@ def file_len(fname):
     return i + 1
 
 
-def run_algorithm(bullyType):
-    n_proccess = -1
-    candidate = -1
-    if len(sys.argv) == 1:
-        n_proccess = int(input("Qual o numero de processos? "))
-        candidate = int(input("Quem iniciara a eleicao? "))
-    else:
-        n_proccess = int(sys.argv[1])
-        candidate = int(sys.argv[2])
-
-    if candidate > n_proccess or candidate <= 0:
-        print("Invalid candidate number = ", candidate, " with n_proccess = ", n_proccess)
-        sys.exit()
-
+def run_algorithm(bullyType, n_proccess, candidate):
     f = open("params.txt", "w")
     f.write(str(n_proccess))
     f.close()
@@ -60,6 +47,52 @@ def run_algorithm(bullyType):
         f.write("Total messages = " + str(total_messages))
 
 
+def buildResults(bullyType):
+    final_results_path = "results/" + bullyType + ".txt"
+
+    results_path = "results/" + bullyType + "/"
+    
+    messages = 0
+
+    with open(final_results_path, "w") as final_file:
+        for filename in os.listdir(os.getcwd() + "/" + results_path):
+            if filename == ".gitkeep":
+                continue
+            number_of_proccess = int(filename.split(".txt")[0])
+
+            with open(results_path + filename, "r") as f:
+                lines = f.readlines()
+                for line in lines:
+                    if len(line.split("Total messages = ")) > 1:
+                        messages = int(line.split("Total messages = ")[1])
+                        final_file.write("n = " + str(number_of_proccess) + ", messages = " + str(messages) + "\n")
+
+    with open(final_results_path, "r") as f:
+        lines = f.readlines()
+        lines.sort()
+    with open(final_results_path, "w") as f:
+        for line in lines:
+            f.write(line)
+
+
 if __name__ == "__main__":
-    run_algorithm("BullyNormal")
-    # run_algorithm("BullyImproved")
+    n_proccess = -1
+    candidate = -1
+    if len(sys.argv) == 1:
+        n_proccess = int(input("Qual o numero de processos? "))
+        candidate = int(input("Quem iniciara a eleicao? "))
+
+        if candidate > n_proccess or candidate <= 0:
+            print("Invalid candidate number = ", candidate, " with n_proccess = ", n_proccess)
+            sys.exit()
+
+        run_algorithm("BullyNormal", n_proccess, candidate)
+        # run_algorithm("BullyImproved", n_proccess, candidate)
+    else:
+        n_proccess = int(sys.argv[1])
+        candidate = int(sys.argv[2])
+        for i in range(1, n_proccess):
+            run_algorithm("BullyNormal", i, candidate)
+        buildResults("BullyNormal")
+        # run_algorithm("BullyImproved", n_proccess, candidate)
+        # buildResults("BullyImproved")
